@@ -1,41 +1,55 @@
 "use client";
 import TodoInput from "@/components/todoInput";
-import TodoItem from "@/components/todoItem";
 import TodoFilter from "@/components/todoFilter";
+import TodoList from "@/components/todoList";
 import { useTodos } from "@/lib/useTodos";
 
-export default function HomePage() {
+export default function Home() {
   const {
     todos,
-    addTodo,
-    toggleTodo,
-    deleteTodo,
-    editTodo,
+    allTodos,
     filter,
     setFilter,
+    addTodo,
+    toggleTodo,
+    editTodo,
+    deleteTodo,
+    clearCompleted,
   } = useTodos();
 
   return (
-    <main className="mx-auto mt-10 max-w-lg space-y-6 px-4">
-      <h1 className="text-center text-3xl font-bold text-gray-800">My Todo List</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-100 to-blue-200">
+      <div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
+        <h1 className="mb-4 text-center text-2xl font-bold text-gray-700">
+          Todo List
+        </h1>
 
-      <TodoInput onAdd={addTodo} />
+        <TodoInput onAdd={addTodo} />
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex gap-2">
+            {(["all", "active", "completed"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1 rounded-full text-sm ${
+                  filter === f ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+          <div className="text-sm text-gray-500">{allTodos.length} tasks</div>
+        </div>
 
-      <TodoFilter filter={filter} setFilter={setFilter} />
-
-      <div className="space-y-2">
-        {todos.length === 0 && (
-          <p className="text-center text-gray-500">No tasks found</p>
-        )}
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-            onEdit={editTodo}
-          />
-        ))}
+        <TodoList
+          todos={todos}
+          onToggle={toggleTodo}
+          onEdit={editTodo}
+          onDelete={deleteTodo}
+          clearCompleted={clearCompleted}
+          isCompletedTab={filter === "completed"}
+        />
       </div>
     </main>
   );
